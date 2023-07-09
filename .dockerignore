@@ -1,0 +1,7 @@
+vendor/
+docker-compose.yml
+docker/
+README.md
+.editorconfig
+tests/
+composer.lock

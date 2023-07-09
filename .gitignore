@@ -1,0 +1,4 @@
+vendor/
+.editorconfig
+tests/
+composer.lock
