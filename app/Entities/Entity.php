@@ -2,6 +2,8 @@
 
 namespace App\Entities;
 
+use App\Exceptions\UserNotFoundException;
+use Exception;
 use PDO;
 use Src\Database\Database;
 
@@ -11,6 +13,7 @@ class Entity extends \stdClass
     private PDO $connection;
     protected string $table = '';
     protected array $fillable = [];
+    protected array $fields = [];
 
     public function __construct()
     {
@@ -24,7 +27,7 @@ class Entity extends \stdClass
         $values = [];
         $placeholders = [];
 
-        foreach ($this->fillable as $attribute => $type) {
+        foreach (array_merge($this->fillable, $this->fields) as $attribute => $type) {
             if (property_exists($this, $attribute)) {
                 $columns[] = $attribute;
                 $values[] = $this->$attribute;
@@ -51,7 +54,7 @@ class Entity extends \stdClass
         $columns = [];
         $values = [];
 
-        foreach ($this->fillable as $attribute => $type) {
+        foreach (array_merge($this->fillable, $this->fields) as $attribute => $type) {
             if (property_exists($this, $attribute)) {
                 $columns[] = $attribute . ' = :' . $attribute;
                 $values[':' . $attribute] = $this->$attribute;
@@ -88,9 +91,28 @@ class Entity extends \stdClass
 
         $row = $statement->fetch(PDO::FETCH_ASSOC);
         if (!$row) {
-            return null;
+            throw new UserNotFoundException();
         }
         $this->fill($row);
+        return $this;
+    }
+
+    public function findOne($field, $value)
+    {
+        $table_name = $this->table;
+
+        $query = "SELECT * FROM $table_name WHERE $field = :value";
+        $statement = $this->connection->prepare($query);
+        $statement->bindValue(':value', $value);
+        $statement->execute();
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if (!$rows) {
+            throw new UserNotFoundException();
+        }
+        foreach ($rows as $row) {
+            $this->fill($row);
+        }
         return $this;
     }
 
