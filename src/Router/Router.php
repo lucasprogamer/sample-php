@@ -3,17 +3,20 @@
 namespace Src\Router;
 
 use Exception;
+use Src\Router\MiddlewareResolver;
 
 class Router
 {
     public $mapper;
     protected $dispatcher;
     protected static $container;
+    protected MiddlewareResolver $middlewareResolver;
 
     public function __construct()
     {
         $this->dispatcher = new Dispatcher();
         $this->mapper = new RouterMapper();
+        $this->middlewareResolver = new MiddlewareResolver();
     }
 
     public static function setContainer($container)
@@ -68,10 +71,32 @@ class Router
     {
         $route = $this->find($request->method(), $request->uri());
         if ($route) {
+            $this->middlewaresResolve($route, $request);
             $params = $route->values ? $this->getValues($request->uri(), $route->values) : [];
             return $this->dispatch($route, $params);
         }
         throw new Exception('Page not found', 404);
+    }
+
+    private function middlewaresResolve($route, $request)
+    {
+        $this->setMiddlewares($route);
+        $this->middlewareResolver->resolve($request);
+    }
+
+    private function setMiddlewares($route)
+    {
+        if (array_key_exists('middleware', $route->callback)) {
+            $middleware = $route->callback['middleware'];
+            if (is_array($middleware)) {
+                foreach ($middleware as $m) {
+                    $this->middlewareResolver->add($m);
+                }
+            }
+            if (is_string($middleware)) {
+                $this->middlewareResolver->add($middleware);
+            }
+        }
     }
 
     protected function getValues($pattern, $positions)
@@ -110,5 +135,9 @@ class Router
         }
 
         return false;
+    }
+
+    public static function resolveMiddlewares()
+    {
     }
 }
