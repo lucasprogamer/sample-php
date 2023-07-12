@@ -17,7 +17,10 @@ trait ResponseTrait
         switch ($this->header) {
             case 'Content-Type: application/json':
                 http_response_code($status);
-                echo json_encode($content);
+                echo json_encode([
+                    'data' => $content,
+                    'error' => false,
+                ]);
         }
         exit;
     }

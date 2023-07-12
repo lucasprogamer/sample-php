@@ -100,4 +100,24 @@ class Request
             return $this->files[$key];
         }
     }
+
+    public function header($key)
+    {
+        return isset($_SERVER[$key]) ? $_SERVER[$key] : null;
+    }
+
+    public function has_authorization()
+    {
+        return isset($_SERVER['HTTP_AUTHORIZATION']);
+    }
+
+    public function authorization()
+    {
+        return  $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+    }
+
+    public function headers()
+    {
+        return $_SERVER ?? [];
+    }
 }

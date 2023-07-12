@@ -2,8 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Exceptions\BadRequestException;
+use App\Entities\User;
 use App\Repositories\UserRepository;
+use App\Exceptions\BadRequestException;
+use App\Exceptions\UserNotFoundException;
+use Exception;
+use Src\Exceptions\UnauthenticatedException;
 
 class UserController extends Controller
 {
@@ -46,5 +50,21 @@ class UserController extends Controller
         $user = $this->repository->findByName($name);
         if (!$user) $this->response('User not found', 404);
         return $this->response($user);
+    }
+
+    /**
+     * thats is a very simple implementation and not can be used in a real application
+     *
+     * @return void
+     */
+    public function auth()
+    {
+        try {
+            $user = new User();
+            $user->get(request()->id);
+            $this->response($user->auth());
+        } catch (UserNotFoundException $e) {
+            throw new UnauthenticatedException();
+        }
     }
 }
