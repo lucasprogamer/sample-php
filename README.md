@@ -16,3 +16,4 @@
 - Add unit tests
 - Improve CORS configuration
 - Add support for REST documentation
+- add suport for tests [PEST, PHPUNIT]
