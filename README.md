@@ -14,7 +14,8 @@
 - Container DI
 - Router
 - Requester 
-- Database ORM 
+- Database ORM
+- Midleware
 
 # Improvements to do
 
