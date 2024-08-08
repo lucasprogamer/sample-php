@@ -1,12 +1,20 @@
 # Sample PHP project
 
 - This is a sample of how to use PHP without frameworks and create a project with the Repository Pattern to build backend REST APIs.
-
+- All this is for study propose has a lot of frameworks more usefull in market.
+  
 # Usage
 
 - Run `composer install`
 - Run `docker compose up -d`
 - Use your HTTP client to access http://localhost:8000
+- 
+# Features
+- Repository Pattern
+- Container DI
+- Router
+- Requester 
+- Database ORM 
 
 # Improvements to do
 
